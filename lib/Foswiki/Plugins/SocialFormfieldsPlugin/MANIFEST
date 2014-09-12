@@ -1,0 +1,8 @@
+data/System/SocialFormfieldsPlugin.txt 0644
+lib/Foswiki/Form/SocialListFieldDefinition.pm 0644
+lib/Foswiki/Form/Socialradio.pm 0644
+lib/Foswiki/Form/Socialrating.pm 0644
+lib/Foswiki/Form/Socialselect.pm 0644
+lib/Foswiki/Plugins/SocialFormfieldsPlugin/Config.spec 0644
+lib/Foswiki/Plugins/SocialFormfieldsPlugin/Core.pm 0644
+lib/Foswiki/Plugins/SocialFormfieldsPlugin.pm 0644

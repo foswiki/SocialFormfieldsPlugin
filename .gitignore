@@ -1,0 +1,13 @@
+*~
+*,v
+*.gz
+igp_*
+.changes
+*.swp
+SocialFormfieldsPlugin.md5
+SocialFormfieldsPlugin.sha1
+SocialFormfieldsPlugin.tgz
+SocialFormfieldsPlugin.txt
+SocialFormfieldsPlugin.zip
+SocialFormfieldsPlugin_installer
+SocialFormfieldsPlugin_installer.pl
