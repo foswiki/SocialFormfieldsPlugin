@@ -61,47 +61,51 @@ sub json {
 sub renderForDisplay {
   my ($this, $format, $value, $attrs) = @_;
 
-  if ($value =~ /^social\-(.*)$/) {
-
-    my $id = $1;
-    my $displayValue;
-    my $jsonValue = '';
-    my $listValue = '';
-
-    $value = $this->core->convertIntToVal(undef, $this, $this->core->getAverageVote($id)) || '' if $format =~ /\$value(?:\(display\)|[^\(]|$)/;
-    $displayValue = $this->getDisplayValue($value) || '' if $format =~ /\$value\(display\)/;
-    $jsonValue = $this->core->getDistVotesAsJSON($id) || '' if $format =~ /\$value\(json\)/;
-    $listValue = $this->getListValue($id) || '' if $format =~ /\$value\(list\)/;
-
-    $format =~ s/\$value\(display\)/$displayValue/g;
-    $format =~ s/\$value\(json\)/$jsonValue/g;
-    $format =~ s/\$value\(list\)/$listValue/g;
-    $format =~ s/\$value/$value/g;
+  if (defined($value) && $value =~ /^social\-(.*)$/) {
+  
+    $format =~ s/\$value\(display\)/$this->renderDisplayValue($value)/ge;
+    $format =~ s/\$value\(json\)/$this->renderJsonValue($value)/ge;
+    $format =~ s/\$value\(list\)/$this->renderListValue($value)/ge;
+    $format =~ s/\$value/$this->renderBestValue($value)/ge;
   }
 
   return $this->SUPER::renderForDisplay($format, $value, $attrs);
 }
 
-sub getDisplayValue {
-  my ( $this, $value ) = @_;
+sub renderDisplayValue {
+  my ( $this, $id ) = @_;
 
-  if (defined $value && $value =~ /^social\-(.*)$/) {
-    my $id = $1;
-    my ($intVal) = $this->core->getAverageVote($id);
-    $value = '';
-    $value = $this->core->convertIntToVal(undef, $this, $intVal) if defined $intVal;
-  }
+  $id =~ s/^social\-//;
 
-  return $this->SUPER::getDisplayValue($value);
+  my ($intVal) = $this->core->getAverageVote($id);
+  my $val = $this->core->convertIntToVal(undef, $this, $intVal);
+  return $this->SUPER::renderDisplayValue($val);
 }
 
-sub getListValue {
+sub renderBestValue {
+  my ( $this, $id ) = @_;
+
+  $id =~ s/^social\-//;
+
+  return $this->core->getAverageVote($id);
+}
+
+sub renderJsonValue {
   my ($this, $id) = @_;
+
+  $id =~ s/^social\-//;
+
+  return $this->core->getDistVotesAsJSON($id) || '';
+}
+
+sub renderListValue {
+  my ($this, $id) = @_;
+
+  $id =~ s/^social\-//;
 
   my $dist = $this->core->getDistVotes($id);
 
   my @list = ();
-
   if ($dist) {
     foreach my $item (@$dist) {
       my ($key, $val) = @$item;

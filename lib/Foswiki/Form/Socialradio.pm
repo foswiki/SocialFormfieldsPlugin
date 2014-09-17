@@ -18,12 +18,8 @@ package Foswiki::Form::Socialradio;
 use strict;
 use warnings;
 
-use Foswiki::Plugins::SocialFormfieldsPlugin ();
-use Foswiki::Func ();
 use Foswiki::Form::SocialListFieldDefinition ();
 use Foswiki::Form::Radio ();
-use JSON ();
-use Assert;
 our @ISA = ('Foswiki::Form::SocialListFieldDefinition', 'Foswiki::Form::Radio');
 
 BEGIN {

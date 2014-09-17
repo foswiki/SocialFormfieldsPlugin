@@ -66,29 +66,38 @@ sub colors {
 sub renderForDisplay {
   my ($this, $format, $value, $attrs) = @_;
 
-  if ($value =~ /^social\-(.*)$/) {
+  if (defined($value) && $value =~ /^social\-(.*)$/) {
   
-    my $id = $1;
-    my $displayValue = '';
-    my $jsonValue = '';
-    my $listValue = '';
-
-    $displayValue = $this->getDisplayValue($value) || '' if $format =~ /\$value\(display\)/;
-    $jsonValue = $this->core->getDistVotesAsJSON($id) || '' if $format =~ /\$value\(json\)/;
-    $listValue = $this->getListValue($id) || '' if $format =~ /\$value\(list\)/;
-    ($value) = $this->core->getBestVote($id) ;#if $format =~ /\$value(?:[^\(]|$)/;
-
-    $format =~ s/\$value\(display\)/$displayValue/g;
-    $format =~ s/\$value\(json\)/$jsonValue/g;
-    $format =~ s/\$value\(list\)/$listValue/g;
-    $format =~ s/\$value/$value/g;
+    $format =~ s/\$value\(display\)/$this->renderDisplayValue($value)/ge;
+    $format =~ s/\$value\(json\)/$this->renderJsonValue($value)/ge;
+    $format =~ s/\$value\(list\)/$this->renderListValue($value)/ge;
+    $format =~ s/\$value/$this->renderBestValue($value)/ge;
   }
 
   return $this->SUPER::renderForDisplay($format, $value, $attrs);
 }
 
-sub getListValue {
+sub renderBestValue {
   my ($this, $id) = @_;
+
+  $id =~ s/^social\-//;
+  my ($value) = $this->core->getBestVote($id);
+
+  return $value;
+}
+
+sub renderJsonValue {
+  my ($this, $id) = @_;
+
+  $id =~ s/^social\-//;
+
+  return $this->core->getDistVotesAsJSON($id) || '';
+}
+
+sub renderListValue {
+  my ($this, $id) = @_;
+
+  $id =~ s/^social\-//;
 
   my $dist = $this->core->getDistVotes($id);
 
@@ -104,38 +113,34 @@ sub getListValue {
   return join(", ", @list);
 }
 
-sub getDisplayValue {
-  my ($this, $value) = @_;
+sub renderDisplayValue {
+  my ($this, $id) = @_;
+
+  $id =~ s/^social\-//;
 
   my $result;
+  my $data = $this->core->getDistVotes($id);
 
-  if ($value =~ /^social\-(.*)$/) {
-    my $id = $1;
-    my $data = $this->core->getDistVotes($id);
+  my $total = 0;
 
-    my $total = 0;
-
-    foreach my $item (@$data) {
-      my ($key, $val) = @$item;
-      $total += $val;
-    }
-
-    $result = '<div class="foswikiSocialRating jqUITooltip" data-arrow="true" data-theme="info" data-position="top" data-delay="0">';
-
-    my @colors = @{$this->colors};
-    my $numColors = scalar(@colors);
-    my $i = 0;
-    foreach my $item (@$data) {
-      my ($key, $val) = @$item;
-      my $color = $colors[$i % $numColors];
-      $result .= "<div class='foswikiSocialRatingValue' title='$key' style='float:left;width:" . ($val / $total * 100) . "%;background-color:$color'>&nbsp;</div>";
-      $i++;
-    }
-
-    $result .= '%CLEAR%</div>';
-  } else {
-    $result = $this->SUPER::getDisplayValue($value);
+  foreach my $item (@$data) {
+    my ($key, $val) = @$item;
+    $total += $val;
   }
+
+  $result = '<div class="foswikiSocialRating jqUITooltip" data-arrow="true" data-theme="info" data-position="top" data-delay="0">';
+
+  my @colors = @{$this->colors};
+  my $numColors = scalar(@colors);
+  my $i = 0;
+  foreach my $item (@$data) {
+    my ($key, $val) = @$item;
+    my $color = $colors[$i % $numColors];
+    $result .= "<div class='foswikiSocialRatingValue' title='$key' style='float:left;width:" . ($val / $total * 100) . "%;background-color:$color'>&nbsp;</div>";
+    $i++;
+  }
+
+  $result .= '%CLEAR%</div>';
 
   return $result;
 }

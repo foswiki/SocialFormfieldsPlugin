@@ -59,7 +59,7 @@ HERE
   'select_dist_votes' => <<'HERE',
       select strval, count(*) as count 
         from %votesTable% 
-        where voting_id = ? 
+        where voting_id = ? and strval != ''
         group by strval
         order by strval
 HERE
@@ -221,8 +221,12 @@ sub beforeSaveHandler {
   foreach my $fieldDef (@socialFields) {
     my $name = $fieldDef->{name};
     my $field = $meta->get('FIELD', $name);
-    my $id = $this->store($meta, $fieldDef, $field->{value});
-    $field->{value} = 'social-'.$id;
+    my $value = $field->{value};
+    unless ($value =~ /^social\-/) { 
+      # catch error situation where value already is socialized
+      my $id = $this->store($meta, $fieldDef, $value);
+      $field->{value} = 'social-'.$id;
+    }
   }
 }
 
