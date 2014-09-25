@@ -1,0 +1,54 @@
+%META:TOPICINFO{author="ProjectContributor" comment="" date="1411036682" format="1.1"  version="1"}%
+---+!! %TOPIC%
+%SHORTDESCRIPTION%
+
+%TOC%
+
+---++ Description
+
+This plugin implenents so-called "social formfields" for ratings and votings.
+While normal/non-social formfields such as =select=, =rating=, or =radio= only
+allow to store a single value per formfield of a [[%SYSTEMWEB%.DataForms][data
+form]], social formfields captures values for each user individually that
+edited the topic. 
+
+Whenever user A edits a topic with a =socialrating= formfield in the attached
+!DataForm will he see and edit his _own_ value. User B won't be able to change
+the value that user A has entered when it is his turn to edit the topic.
+Instead, values added by all users will be stored in a database behind the
+scene that holds the personal values of each user. These will be swapped in and
+out during an edit-save cycle. When displaying the topic it will show an average rating
+among all ratings performed by all users, or the best selection performed via a
+=socialradio= or =socialselect= formfield. Values can also be extracted in json
+form to be used in Foswiki:Extensions/HighchartsPlugin or the like to render a bar chart of the
+distribution. 
+
+---++ Usage
+
+Social formfields can be configured like their non-social counterpart.
+
+   * =socialrating=: capture a (numeric) rating value per user and display the average among all votes
+   * =socialselect=: capture a selection and display the distribution of values being selected among all users
+     that took part on the survey
+   * =socialradio=: same as =socialselect= but displayedas a radio boxk
+   * =socialcheckbox=: %RED%under construction%ENDCOLOR%
+
+---++ Installation Instructions
+
+%$INSTALL_INSTRUCTIONS%
+
+---++ Info
+<!--
+   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
+-->
+
+|  Author(s): | Michael Daum |
+|  Copyright: | &copy; 2014 Michael Daum http://michaeldaumconsulting.com |
+|  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
+|  Release: | %$RELEASE% |
+|  Version: | %$VERSION% |
+|  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  18 Sep 2014 | initial checkin |
+|  Dependencies: | %$DEPENDENCIES% |
+|  Home page: | Foswiki:Extensions/%TOPIC% |
+|  Support: | Foswiki:Support/%TOPIC% |
